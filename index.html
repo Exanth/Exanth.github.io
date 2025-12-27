@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+<title>Jackiequest: Wyvern battle</title>
 <style>
 body {
   background-image: url('skybox.png');
@@ -31,13 +32,80 @@ var fighter=["Fighter",20,3,"Slashes"]
 var ranger=["Ranger",15,5,"Shoots"]
 var mage=["Mage",10,7,"Firebolts"]
 var cleric=["Cleric",10,-3,"Heals"]
+
 var arrayEmpty = new Array(6);
-var partySlots=[["Mage",10,10,7,"Firebolts"],["Ranger",15,15,5,"Shoots"],["Cleric",10,10,-3,"Heals"],["Fighter",20,20,3,"Slashes"],["Mage",10,10,7,"Firebolts"],["Ranger",15,15,5,"Shoots"]]
-var enemySlots=[["Blade bird",12,12,5,"Pecks"],["Eye puddle",8,8,5,"Lasers"],["Shield",20,20,1,"Rams"],["Hydra seal",10,10,-3,"Charms"],["Blade bird",12,12,5,"Pecks"],["Eye puddle",8,8,5,"Lasers"]]
+var enemies = [
+  ["Blade birdling", 10, 10, 6, "Pecks"],         
+  ["Eye puddle", 9, 9, 7, "Lasers"],              
+  ["Shield", 20, 20, 3, "Rams"],                  
+  ["Hydra seal", 12, 12, -3, "Charms"],           
+  ["Bat larva", 12, 12, 5, "Screeches"],          
+  ["Bearcub blob", 15, 15, 4, "Mauls"],           
+  ["Bug cannon", 8, 8, 8, "Shoots"],              
+  ["Croc ball", 10, 10, 6, "Bites"],              
+  ["Fox floof", 9, 9, 7, "Pounces"],              
+  ["Small blobdragon", 6, 6, 10, "Ignites"],
+  ["Kobold", 12, 12, 5, "Stabs"],           
+  ["Lava worm", 7, 7, 9, "Burns"],          
+  ["Nest bit", 10, 10, 6, "Nips"],          
+  ["Sand ant", 10, 10, 6, "Gnaws"],         
+  ["Tree saurling", 15, 15, 4, "Swipes"],   
+]
+var partySlots=[["Mage",10,10,7,"Firebolts"],["Ranger",15,15,5,"Shoots"],["Healer",10,10,-3,"Heals"],["Fighter",20,20,3,"Slashes"],["Mage",10,10,7,"Firebolts"],["Ranger",15,15,5,"Shoots"]]
+var hireSlots=[["Mage",10,10,7,"Firebolts"],["Ranger",15,15,5,"Shoots"],["Healer",10,10,-3,"Heals"],["Fighter",20,20,3,"Slashes"],["Paladin",30,30,-1,"Rallies"],["Druid",12,12,6,"Claws"]]
+var enemySlots=[[],[],[],[],[],[]] <!-- =
 len=partySlots.length
+var selected_slot=0
+
+function hire_units() {
+	for (let i = 0; i < len; i++){
+
+			document.getElementById("enemy_"+(i+1)+"_image").innerHTML="<img style='transform: scaleX(-1);' src='"+hireSlots[i][0]+".png' onclick=replace("+(i)+")>"
+			document.getElementById("enemy_"+(i+1)).innerHTML= ("<progress value="+hireSlots[i][1]+" max="+hireSlots[i][2]+"></progress><br>"+hireSlots[i][0]+" "+hireSlots[i][1]+"/"+hireSlots[i][2]+", ")
+			
+			if (hireSlots[i][3]>0)
+			{
+				document.getElementById("enemy_"+(i+1)).innerHTML+=hireSlots[i][3]+" dmg"
+			} else {
+				document.getElementById("enemy_"+(i+1)).innerHTML+=-hireSlots[i][3]+" heal"
+			}
+	}
+}
+function replace(incoming) {
+	partySlots[selected_slot-1]=hireSlots[incoming]
+	console.log("replacement! "+incoming)
+	document.getElementById("player_"+(selected_slot)+"_image").innerHTML="<img src='"+partySlots[selected_slot-1][0]+".png' onclick=replace("+(selected_slot-1)+")>"
+	
+ 	document.getElementById("player_"+(selected_slot)).innerHTML= ("<progress value="+partySlots[selected_slot-1][1]+" max="+partySlots[selected_slot-1][2]+"></progress><br><a id=player_"+(selected_slot)+"_name onclick='rename("+(selected_slot+1)+")'>"+partySlots[selected_slot-1][0]+"</a> "+partySlots[selected_slot-1][1]+"/"+partySlots[selected_slot-1][2]+", ")
+	if (partySlots[selected_slot-1][2]>0) { document.getElementById("player_"+selected_slot).innerHTML+=partySlots[selected_slot-1][3]+" dmg"
+	} else { 
+	document.getElementById("player_"+selected_slot).innerHTML+=-partySlots[selected_slot-1][3]+" heal"
+	}
+	
+}
+
+function select(index) {
+	console.log("fucking index is "+index+" and selected slot is "+selected_slot)
+	if (index==selected_slot) {
+		document.getElementById("player_"+index+"_image").style.borderWidth = '1px';
+		selected_slot=0
+	} else {
+		selected_slot=index
+		document.getElementById("player_1_image").style.borderWidth = '1px'
+		document.getElementById("player_2_image").style.borderWidth = '1px'
+		document.getElementById("player_3_image").style.borderWidth = '1px'
+		document.getElementById("player_4_image").style.borderWidth = '1px'
+		document.getElementById("player_5_image").style.borderWidth = '1px'
+		document.getElementById("player_6_image").style.borderWidth = '1px'
+			
+		document.getElementById("player_"+index+"_image").style.borderWidth = '5px';
+	}
+	console.log("selected slot has become "+selected_slot)
+}
 
 function get_total_health(team) {
 	total_health=0
+	console.log("total health")
 	for(let i=0;i<team.length;i++) {
 		total_health+=team[i][1]
 	}
@@ -47,13 +115,16 @@ function get_total_health(team) {
 function startup() {
 	for (let i = 0; i < len; i++){
 		document.getElementById("player_"+(i+1)).innerHTML= ("<progress value="+partySlots[i][1]+" max="+partySlots[i][2]+"></progress><br><a id=player_"+(i+1)+"_name onclick='rename("+(i+1)+")'>"+partySlots[i][0]+"</a> "+partySlots[i][1]+"/"+partySlots[i][2]+", ")
-		if (partySlots[i][3]>0)
+		if (partySlots[i][2]>0)
 		{
 			document.getElementById("player_"+(i+1)).innerHTML+=partySlots[i][3]+" dmg"
 		} else {
 			document.getElementById("player_"+(i+1)).innerHTML+=-partySlots[i][3]+" heal"
 		}
 		
+		var random_enem_i = Math.floor(Math.random() * enemies.length);
+		enemySlots[i]=enemies[random_enem_i].slice()
+		document.getElementById("enemy_"+(i+1)+"_image").innerHTML="<img src='monsters\\"+enemySlots[i][0]+".png'>"
 		document.getElementById("enemy_"+(i+1)).innerHTML= ("<progress value="+enemySlots[i][1]+" max="+enemySlots[i][2]+"></progress><br>"+enemySlots[i][0]+" "+enemySlots[i][1]+"/"+enemySlots[i][2]+", ")
 		
 		if (enemySlots[i][3]>0)
@@ -68,8 +139,10 @@ function rename(id)
 {
 	<!-- console.log(partySlots[id-1])
 	new_name = prompt("Rename "+partySlots[id-1][0]);
-	document.getElementById("player_"+(id)+"_name").innerHTML = new_name
-	partySlots[id-1] = new_name
+	if (len(new_name)>0) {
+		document.getElementById("player_"+(id)+"_name").innerHTML = new_name
+		partySlots[id-1] = new_name
+	}
 }
 
 function get_target(target_slots,slot_numbers)
@@ -82,31 +155,35 @@ function get_target(target_slots,slot_numbers)
 			return slot_numbers[i]
 		}
 	}
-	return slot_numbers[-1]
+	return slot_numbers[slot_numbers.length-1]
 }
 var winner="nobody"
 async function start_battle()
 {
+	var table = document.getElementById("log");
 	battle(function() {
 			console.log(winner+" wins!");
+			var row = table.insertRow(-1);
+			var cell = row.insertCell(0); 
+			cell.innerHTML=("<b>"+winner+" wins!</b>")
 		}); 
 }
 
+
 async function battle(_callback) {
 	var table = document.getElementById("log");
-	var row = table.insertRow(-1);
-	var cell = row.insertCell(0); 
 	document.getElementById("start_button").remove();
+	document.getElementById("hire_button").remove();
 	var party_health_max=get_total_health(partySlots)
 	var enemy_health_max=get_total_health(enemySlots)
 	var round=1
 	var max_rounds=3
 		for (let i = 0; round <= max_rounds; i++) {
 		if (i>=len)
-			{
-				i-=len
-				round+=1
-			}
+		{
+			i-=len
+			round+=1
+		}
 		setTimeout(function() {
 			var member=partySlots[i]
 			var row = table.insertRow(-1);
@@ -141,7 +218,7 @@ async function battle(_callback) {
 				document.getElementById("enemy_"+(target+1)).innerHTML= ("<progress value="+enemySlots[target][1]+" max="+enemySlots[target][2]+"></progress><br>"+enemySlots[target][0]+" "+enemySlots[target][1]+"/"+enemySlots[target][2]+", "+enemySlots[target][3]+" dmg")
 			}
 			enemy_health=get_total_health(enemySlots)	
-			<!-- console.log("Enemy health: "+enemy_health+"/"+enemy_health_max)
+			console.log("Enemy health: "+enemy_health+"/"+enemy_health_max)
 			if (enemy_health==0) {
 				winner="party"
 				_callback();   
@@ -169,13 +246,13 @@ async function battle(_callback) {
 				}
 				cell1.innerHTML = monster[0]+" "+monster[4]+" "+partySlots[target][0]+" for "+monster[3]+" damage!";
 				partySlots[target][1]=partySlots[target][1]-monster[3]
-				if (partySlots[target][1]<0) {partySlots[target][1]==0}
+				if (partySlots[target][1]<0) {partySlots[target][1]=0}
 				document.getElementById("player_"+(target+1)).innerHTML= ("<progress value="+partySlots[target][1]+" max="+partySlots[target][2]+"></progress><br>"+partySlots[target][0]+" "+partySlots[target][1]+"/"+partySlots[i][2]+", "+partySlots[target][3]+" dmg")
-				<!-- console.log("Party health: "+party_health+"/"+party_health_max)
 			}
 			},500)
 			
 			party_health=get_total_health(partySlots)
+			console.log("Party health: "+party_health+"/"+party_health_max)
 			if (party_health==0) {
 				console.log("the party dies...")
 				winner="enemy"
@@ -185,10 +262,6 @@ async function battle(_callback) {
 			
 			},1000*(i+((round-1)*len)))
 		}
-}
-
-function sleep(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
 }
 
 </script>
@@ -202,20 +275,20 @@ function sleep(ms) {
 		<table id="player" class="army" style="background-color:lightgrey; float:left; border-collapse: collapse;">
 		<tr><th style="font-size:24px;text-align:center" colspan="4">Player</th></tr>
 		<tr>
-		<td id="player_1_image"><img src="mage.png">
-		<td id="player_2_image"><img src="ranger.png">
+		<td id="player_1_image" style="border: 1px solid black"><img src="mage.png" onclick="select(1)">
+		<td id="player_2_image" style="border: 1px solid black"><img src="ranger.png" onclick="select(2)">
 		<tr>
 		<td id="player_1">
 		<td id="player_2">
 		<tr>
-		<td id="player_3_image"><img src="healer.png">
-		<td id="player_4_image"><img src="fighter.png">
+		<td id="player_3_image" style="border: 1px solid black"><img src="healer.png" onclick="select(3)">
+		<td id="player_4_image" style="border: 1px solid black"><img src="fighter.png" onclick="select(4)">
 		<tr>
 		<td id="player_3">
 		<td id="player_4">
 		<tr>
-		<td id="player_5_image"><img src="mage.png">
-		<td id="player_6_image"><img src="ranger.png">
+		<td id="player_5_image" style="border: 1px solid black"><img src="mage.png" onclick="select(5)">
+		<td id="player_6_image" style="border: 1px solid black"><img src="ranger.png" onclick="select(6)">
 		<tr>
 		<td id="player_5">
 		<td id="player_6">
@@ -225,29 +298,31 @@ function sleep(ms) {
 		</td> <!-- pet -->
         <td style="outline: 0px solid grey; width: 25%; display: table-cell; padding:50px; margin: 50px;">
 		<table id="log" style="background-color:lightgrey;  border-collapse: collapse; width: 90% ">
-		<tr><th style="font-size:24px;text-align:center" colspan="3">Event log</th></tr>
-		<tr onclick="start_battle()" id="start_button"><th>Commence battle
+		<tr><th style="font-size:24px;text-align:center" colspan="2">Event log</th></tr>
+		<tr>
+		<th onclick="start_battle()" id="start_button">Start battle
+		<th onclick="hire_units()" id="hire_button">Hire Units
 		</table><br>
 		</td> <!-- center padding-->
         
 		<td style="outline: 0px solid yellow; width: 25%;display: table-cell; padding:50px; margin: 50px;">
 		<table id="enemy" class="army" style="background-color:lightgrey; float:left; border-collapse: collapse;">
-		<tr><th style="font-size:24px;text-align:center" colspan="4">Enemy</th></tr>
+		<tr><th style="font-size:24px;text-align:center" colspan="2">Enemy</th></tr>
 		<tr>
-		<td id="enemy_1_image"><img src="blade birdling.png">
-		<td id="player_2_image"><img src="eye puddle.png">
+		<td id="enemy_1_image">
+		<td id="enemy_2_image">
 		<tr>
 		<td id="enemy_1">
 		<td id="enemy_2">
 		<tr>
-		<td id="enemy_3_image"><img src="shield.png">
-		<td id="enemy_4_image"><img src="hydra seal.png">
+		<td id="enemy_3_image">
+		<td id="enemy_4_image">
 		<tr>
 		<td id="enemy_3">
 		<td id="enemy_4">
 		<tr>
-		<td id="enemy_5_image"><img src="blade birdling.png">
-		<td id="enemy_6_image"><img src="eye puddle.png">
+		<td id="enemy_5_image">
+		<td id="enemy_6_image">
 		<tr>
 		<td id="enemy_5">
 		<td id="enemy_6">
