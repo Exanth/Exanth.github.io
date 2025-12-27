@@ -124,7 +124,7 @@ function startup() {
 		
 		var random_enem_i = Math.floor(Math.random() * enemies.length);
 		enemySlots[i]=enemies[random_enem_i].slice()
-		document.getElementById("enemy_"+(i+1)+"_image").innerHTML="<img src='monsters\\"+enemySlots[i][0]+".png'>"
+		document.getElementById("enemy_"+(i+1)+"_image").innerHTML="<img src='"+enemySlots[i][0]+".png'>"
 		document.getElementById("enemy_"+(i+1)).innerHTML= ("<progress value="+enemySlots[i][1]+" max="+enemySlots[i][2]+"></progress><br>"+enemySlots[i][0]+" "+enemySlots[i][1]+"/"+enemySlots[i][2]+", ")
 		
 		if (enemySlots[i][3]>0)
